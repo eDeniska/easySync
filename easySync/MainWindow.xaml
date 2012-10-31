@@ -1,0 +1,208 @@
+﻿<Window x:Class="easySync.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="clr-namespace:easySync"
+        xmlns:cc="clr-namespace:easySync.CustomControls"
+        Title="easySync" mc:Ignorable="d" Name="MainWindowHandle"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        d:DesignHeight="350" d:DesignWidth="525" 
+        MinHeight="300" MinWidth="300" Loaded="Window_Loaded" WindowStyle="SingleBorderWindow" 
+        WindowStartupLocation="CenterScreen" WindowState="Minimized" Icon="Resources\Synchronize.ico">
+
+    <Window.CommandBindings>
+        <CommandBinding Command="New" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed" />
+        <CommandBinding Command="Open" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed"  />
+        <CommandBinding Command="Delete" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed" />
+        <CommandBinding Command="Close" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed" />
+        <CommandBinding Command="Help" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed" />
+        <CommandBinding Command="Redo" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed" />
+        <CommandBinding Command="Stop" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed" />
+    </Window.CommandBindings>
+    
+    <Window.InputBindings>
+        <KeyBinding Key="N" Modifiers="Control" Command="New" />
+        <KeyBinding Key="E" Modifiers="Control" Command="Open" CommandParameter="{Binding ElementName=lbPairs, Path=SelectedItem}" />
+        <KeyBinding Key="D" Modifiers="Control" Command="Delete" CommandParameter="{Binding ElementName=lbPairs, Path=SelectedItem}" />
+        <KeyBinding Key="X" Modifiers="Control" Command="Close" />
+    </Window.InputBindings>
+
+    <Window.TaskbarItemInfo>
+        <TaskbarItemInfo>
+            <TaskbarItemInfo.ThumbButtonInfos>
+                <ThumbButtonInfo Command="New" Description="New pair" CommandTarget="{Binding ElementName=MainWindowHandle}" ImageSource="Resources\Add_16x16.png"/>
+                <ThumbButtonInfo Command="Stop" Description="Pause activities" CommandTarget="{Binding ElementName=MainWindowHandle}" ImageSource="Resources\Pause_16x16.png"/>
+            </TaskbarItemInfo.ThumbButtonInfos>
+        </TaskbarItemInfo>
+    </Window.TaskbarItemInfo>
+    
+    <Window.Resources>
+        <Style TargetType="{x:Type ListBox}">
+            <Setter Property="ItemsPanel">
+                <Setter.Value>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel Margin="0" />
+                    </ItemsPanelTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        
+        <GroupBox Grid.Column="0" Header="Pairs" Margin="3" Name="gbPairs" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <ListBox Grid.ColumnSpan="2" ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
+                         VerticalAlignment="Stretch" Name="lbPairs" HorizontalContentAlignment="Stretch" 
+                         KeyDown="lbPairs_KeyDown" ItemsSource="{Binding}" AlternationCount="2" >
+
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="{x:Type ListBoxItem}">
+                            <Setter Property="Margin" Value="0" />
+                            <Setter Property="Padding" Value="0" />
+                            <EventSetter Event="MouseDoubleClick" Handler="lbPairs_MouseDoubleClick" />
+                            <Style.Triggers>
+                                <Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                                    <Setter Property="Background" Value="WhiteSmoke"></Setter>
+                                </Trigger>
+                                <!--
+                                <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                                    <Setter Property="Background" Value="White"></Setter>
+                                </Trigger>
+                                -->
+                            </Style.Triggers>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+
+                    <ListBox.ItemTemplate>
+                        <DataTemplate DataType="l:SyncPair">
+                            <Grid x:Name="grdMain" Margin="3,0,3,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <Image Name="imgState" VerticalAlignment="Center" Stretch="None" Margin="3,0,3,0" Opacity="0.7" Source="Resources\Help_16x16.png" 
+                                       ToolTip="Unknown" />
+                                <Grid Grid.Column="1" VerticalAlignment="Center">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    
+                                    <TextBlock Style="{StaticResource ResourceKey=ListBoxItemTitleStyle}">Local:</TextBlock>
+                                    <TextBlock Grid.Column="1" Style="{StaticResource ResourceKey=ListBoxItemValueStyle}"
+                                               Text="{Binding Path=LocalPath}" ClipToBounds="True" TextTrimming="CharacterEllipsis" />
+                                
+                                    <TextBlock Grid.Row="1" Style="{StaticResource ResourceKey=ListBoxItemTitleStyle}">Remote:</TextBlock>
+                                    <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource ResourceKey=ListBoxItemValueStyle}" 
+                                               Text="{Binding Path=RemotePath}" ClipToBounds="True" TextTrimming="CharacterEllipsis"  />
+                                
+                                    <TextBlock x:Name="lblBackupPath" Grid.Row="2" Style="{StaticResource ResourceKey=ListBoxItemTitleStyle}">Backup:</TextBlock>
+                                    <TextBlock x:Name="tbBackupPath" Grid.Row="2" Grid.Column="1" Style="{StaticResource ResourceKey=ListBoxItemValueStyle}" 
+                                               Text="{Binding Path=BackupPath}" ClipToBounds="True" TextTrimming="CharacterEllipsis"  />
+                                </Grid>
+
+                                <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                    <TextBlock Style="{StaticResource ResourceKey=ListBoxItemTitleStyle}" Text="{Binding Path=Strategy.Title}" />
+                                    <TextBlock Style="{StaticResource ResourceKey=ListBoxItemTitleStyle}" 
+                                               Text="{Binding Path=BackupMode.Title}" />
+                                </StackPanel>
+                                
+                                <cc:ImageButton x:Name="btnEnabled" ToolTip="Enable this pair" Command="Redo" CommandParameter="{Binding}" Grid.Column="3" 
+                                                HorizontalAlignment="Right" VerticalAlignment="Center" ImagePath="Resources\Play_16x16.png" />
+                                <cc:ImageButton ToolTip="Edit pair settings" Command="Open" CommandParameter="{Binding}" Grid.Column="4" 
+                                                HorizontalAlignment="Right" VerticalAlignment="Center" ImagePath="Resources\Properties_16x16.png" />
+                                <cc:ImageButton ToolTip="Delete this pair" Command="Delete" CommandParameter="{Binding}" Grid.Column="5" 
+                                                HorizontalAlignment="Right" VerticalAlignment="Center" ImagePath="Resources\Delete_16x16.png" />
+                            </Grid>
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem}},Path=IsSelected}" Value="True">
+                                    <Setter TargetName="grdMain" Property="Background" Value="{DynamicResource {x:Static SystemColors.HighlightBrush}}"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=BackupMode.ID}" Value="NOBACKUPS">
+                                    <Setter TargetName="lblBackupPath" Property="Visibility" Value="Collapsed" />
+                                    <Setter TargetName="tbBackupPath" Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=IsEnabled}" Value="True">
+                                    <Setter TargetName="btnEnabled" Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=State}" Value="NotReady">
+                                    <Setter TargetName="imgState" Property="Source" Value="Resources\Stop_16x16.png" />
+                                    <Setter TargetName="imgState" Property="ToolTip" Value="Not ready" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=State}" Value="Paused">
+                                    <Setter TargetName="imgState" Property="Source" Value="Resources\Pause_16x16.png" />
+                                    <Setter TargetName="imgState" Property="ToolTip" Value="Paused" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=State}" Value="Completed">
+                                    <Setter TargetName="imgState" Property="Source" Value="Resources\Stop_16x16.png" />
+                                    <Setter TargetName="imgState" Property="ToolTip" Value="Completed" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=State}" Value="NotInitialized">
+                                    <Setter TargetName="imgState" Property="Source" Value="Resources\Cancel_16x16.png" />
+                                    <Setter TargetName="imgState" Property="ToolTip" Value="Not initialized" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=State}" Value="Ready">
+                                    <Setter TargetName="imgState" Property="Source" Value="Resources\Check_16x16.png" />
+                                    <Setter TargetName="imgState" Property="ToolTip" Value="Ready" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=State}" Value="Synchronizing">
+                                    <Setter TargetName="imgState" Property="Source" Value="Resources\Refresh_16x16.png" />
+                                    <Setter TargetName="imgState" Property="ToolTip" Value="Synchronizing" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=State}" Value="Initializing">
+                                    <Setter TargetName="imgState" Property="Source" Value="Resources\Settings_16x16.png" />
+                                    <Setter TargetName="imgState" Property="ToolTip" Value="Initializing" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=State}" Value="Failure">
+                                    <Setter TargetName="imgState" Property="Source" Value="Resources\Remove_16x16.png" />
+                                    <Setter TargetName="imgState" Property="ToolTip" Value="Failure" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=State}" Value="BackingUp">
+                                    <Setter TargetName="imgState" Property="Source" Value="Resources\Download_16x16.png" />
+                                    <Setter TargetName="imgState" Property="ToolTip" Value="Backing up" />
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                
+                <StackPanel Grid.Row="1" Margin="0" Orientation="Horizontal">
+                    <cc:ImageButton Command="New" ImagePath="Resources\Add_16x16.png" Margin="0,3,6,0" Text="New..." />
+                    <!--
+                    <cc:ImageButton Command="Open" CommandParameter="{Binding ElementName=lbPairs, Path=SelectedItem}" ImagePath="Resources\Edit_16x16.png" Text="Edit..." />
+                    <cc:ImageButton Command="Delete" CommandParameter="{Binding ElementName=lbPairs, Path=SelectedItem}" ImagePath="Resources\Delete_16x16.png" Text="Delete..." />
+                    -->
+                    <CheckBox Margin="6,6,6,0" VerticalAlignment="Center" Checked="cbPauseActivities_Checked" Unchecked="cbPauseActivities_Unchecked">Pause all activities</CheckBox>
+                </StackPanel>
+                <cc:ImageButton Grid.Column="1" Grid.Row="1" Command="Help" Text="About easySync..." Margin="0,3,0,0" ImagePath="Resources\Information_16x16.png" />
+            </Grid>
+        </GroupBox>
+
+        <TextBlock Style="{StaticResource ResourceKey=TextBlockDefaultStyle}" Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" 
+                   Text="{Binding ElementName=MainWindowHandle, Path=StatusText}" />
+    </Grid>
+</Window>

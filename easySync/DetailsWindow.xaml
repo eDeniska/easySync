@@ -1,0 +1,88 @@
+﻿<Window x:Class="easySync.DetailsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:cc="clr-namespace:easySync.CustomControls" Icon="Resources\Properties.ico"
+        Title="Pair details" MinWidth="300" MinHeight="200" WindowStartupLocation="CenterOwner" SizeToContent="WidthAndHeight"
+        ShowInTaskbar="False" Loaded="Window_Loaded" WindowStyle="SingleBorderWindow">
+    <Window.CommandBindings>
+        <CommandBinding Command="Save" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed" />
+        <CommandBinding Command="Close" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed" />
+        <CommandBinding Command="Open" CanExecute="CommandBinding_CanExecute" Executed="CommandBinding_Executed" />
+    </Window.CommandBindings>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <GroupBox Header="Pair details" Margin="3">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <TextBlock HorizontalAlignment="Stretch" Margin="3,3,3,3">Source folder:</TextBlock>
+                <TextBox Grid.Row="1"  HorizontalAlignment="Stretch" Margin="3,3,3,3" Name="tbSourceFolder" />
+                <cc:ImageButton Grid.Column="1" Grid.RowSpan="2" VerticalAlignment="Bottom" Command="Open" CommandParameter="{Binding ElementName=tbSourceFolder}"
+                        Margin="0,0,1,0" ImagePath="Resources\Open_16x16.png" />
+
+                <TextBlock Grid.Row="2" HorizontalAlignment="Stretch" Margin="3,8,3,3">Destination folder:</TextBlock>
+                <TextBox Grid.Row="3" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="3,3,3,3" Name="tbDestinationFolder" />
+                <cc:ImageButton Grid.Row="2" Grid.RowSpan="2" Grid.Column="1" VerticalAlignment="Bottom" Command="Open" CommandParameter="{Binding ElementName=tbDestinationFolder}" 
+                        Margin="0,0,1,0" ImagePath="Resources\Open_16x16.png" />
+
+                <TextBlock Grid.Row="4" HorizontalAlignment="Stretch" Margin="3,8,3,3">Monitoring type:</TextBlock>
+                <ComboBox Grid.Row="5" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Margin="3,3,3,3" Name="cbMonitoring" ItemsSource="{Binding}"/>
+
+                <TextBlock Grid.Row="6" HorizontalAlignment="Stretch" Margin="3,8,3,3">Backup type:</TextBlock>
+                <ComboBox Grid.Row="7" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Margin="3,3,3,3" Name="cbBackup" 
+                          ItemsSource="{Binding}" SelectedValuePath="ID" DisplayMemberPath="Title" />
+
+                <TextBlock Visibility="{Binding ElementName=tbBackupFolder, Path=Visibility}" Grid.Row="8" HorizontalAlignment="Stretch" Margin="3,3,3,3">Backup folder:</TextBlock>
+                <TextBox Grid.Row="9"  HorizontalAlignment="Stretch" Margin="3,3,3,3" Name="tbBackupFolder">
+                    <TextBox.Style>
+                        <Style>
+                            <Setter Property="TextBox.Visibility" Value="Visible" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=cbBackup, Path=SelectedValue}" Value="NOBACKUPS">
+                                    <Setter Property="TextBlock.Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+                <cc:ImageButton Visibility="{Binding ElementName=tbBackupFolder, Path=Visibility}" Grid.Column="1" Grid.Row="8" Grid.RowSpan="2" VerticalAlignment="Bottom" Command="Open" CommandParameter="{Binding ElementName=tbBackupFolder}"
+                        Margin="0,0,1,0" ImagePath="Resources\Open_16x16.png" />
+
+                <CheckBox Grid.Row="10" VerticalAlignment="Top" Grid.ColumnSpan="2" Content="Is pair enabled?" Margin="3,8,3,3" Name="cbEnabled" />
+            </Grid>
+        </GroupBox>
+            
+        <StackPanel Grid.Row="1" Margin="0" Orientation="Horizontal">
+            <cc:ImageButton Margin="3,3,6,3" Command="Save" IsDefault="True" Text="Ok" ImagePath="Resources\Check_16x16.png" />
+            <cc:ImageButton Margin="0,3,6,3" Command="Close" IsCancel="True" Text="Cancel" ImagePath="Resources\Cancel_16x16.png"  />
+        </StackPanel>
+    </Grid>
+    <!--
+    <Window.Triggers>
+        <DataTrigger Binding="{Binding ElementName=cbBackup,Path=SelectedValue}" Value="NOBACKUPS">
+            <Setter TargetName="tbBackupFolder" Property="TextBox.IsEnabled" Value="False" />
+            <Setter TargetName="lblBackupFolder" Property="TextBlock.IsEnabled" Value="False" />
+            <Setter TargetName="btnBackupFolder" Property="Button.IsEnabled" Value="False" />
+        </DataTrigger>
+    </Window.Triggers>
+    -->
+</Window>
